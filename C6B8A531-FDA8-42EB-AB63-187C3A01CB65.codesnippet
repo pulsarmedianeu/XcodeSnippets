@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDECodeSnippetCompletionPrefix</key>
+	<string></string>
+	<key>IDECodeSnippetCompletionScopes</key>
+	<array>
+		<string>All</string>
+	</array>
+	<key>IDECodeSnippetContents</key>
+	<string>enum NetworkError: Error {
+    case badURL
+    case noData
+    case decodingError
+}
+
+class HTTPClient {
+    
+    func getMoviesBy(search: String, completion: @escaping (Result&lt;[Movie]?, NetworkError&gt;) -&gt; Void) {
+        
+        guard let url = URL.forMoviesByName(search)
+            else {
+                return completion(.failure(.badURL))
+            }
+        URLSession.shared.dataTask(with: url) {data, response, error in
+            guard let data = data, error == nil else {
+                return completion(.failure(.noData))
+            }
+            
+            guard let moviesResponse = try? JSONDecoder().decode(MovieResponse.self, from: data) else {
+                return completion(.failure(.decodingError))
+            }
+            
+            completion(.success(moviesResponse.movies))
+            
+        }.resume()
+        
+    }
+}
+
+extension URL {
+    static func forMoviesByName(_ name:String) -&gt; URL? {
+        URL(string: "http://www.omdbapi.com/?s=\(name)&amp;apikey=\(Constants.API_KEY)")
+    }
+}
+
+//HTTPClient().getMoviesBy(search:"batman") { result in
+//    switch result {
+//    case .success(let movies) :
+//        print(movies)
+//    case .failure(let error) :
+//        print(error.localizedDescription)
+ //   }
+//}
+</string>
+	<key>IDECodeSnippetIdentifier</key>
+	<string>C6B8A531-FDA8-42EB-AB63-187C3A01CB65</string>
+	<key>IDECodeSnippetLanguage</key>
+	<string>Xcode.SourceCodeLanguage.Swift</string>
+	<key>IDECodeSnippetSummary</key>
+	<string></string>
+	<key>IDECodeSnippetTitle</key>
+	<string>HTTPClient</string>
+	<key>IDECodeSnippetUserSnippet</key>
+	<true/>
+	<key>IDECodeSnippetVersion</key>
+	<integer>2</integer>
+</dict>
+</plist>
